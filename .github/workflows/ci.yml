@@ -1,4 +1,4 @@
-﻿name: CI Pipeline
+name: CI Pipeline
 
 on:
   push:
@@ -9,29 +9,42 @@ on:
 jobs:
   backend-test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci
-      - run: npm run lint --if-present
-      - run: npm test --if-present
+
+      - name: Install dependencies (backend)
+        working-directory: ./backend
+        run: npm install
+
+      - name: Lint backend (if lint script exists)
+        working-directory: ./backend
+        run: npm run lint --if-present
+
+      - name: Test backend (if test script exists)
+        working-directory: ./backend
+        run: npm test --if-present
 
   frontend-build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci
-      - run: npm run build --if-present
+
+      - name: Install dependencies (frontend)
+        working-directory: ./frontend
+        run: npm install
+
+      - name: Build frontend (if build script exists)
+        working-directory: ./frontend
+        run: npm run build --if-present
